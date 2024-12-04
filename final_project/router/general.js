@@ -22,46 +22,80 @@ public_users.post("/register", (req,res) => {
  }
 });
 
+const getBooks =()=>{
+    return new Promise((resolve,reject)=>{
+        setTimeout (()=>{
+            resolve(books);
+        },1000);
+    })
+
+}
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-    res.send(JSON.stringify(books));
+    getBooks()
+    .then((books) => {
+      res.send(JSON.stringify(books));
+    })
+    .catch((error) => {
+      res.status(500).send({ error });
+    });
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
     let isbn = req.params.isbn;
-    res.send(books[isbn])
+    getBooks()
+    .then((books)=>{
+        res.send(books[isbn])
+    })
+    .catch((error)=>{
+        res.status(500).send({error})
+    })
+   
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
   var author = req.params.author
-  var bookArray = Object.keys(books);
+  getBooks()
+  .then((books)=>{
+    var bookArray = Object.keys(books);
 
-  for(var i in bookArray){
-   
-    if(books[bookArray[i]].author === author){
-        
-        res.send(books[bookArray[i]]);
+    for(var i in bookArray){
+     
+      if(books[bookArray[i]].author === author){
+          
+          res.send(books[bookArray[i]]);
+      }
     }
-  }
-  res.send("Author cannot be found")
+  })
+  .catch((error)=>{
+    res.status(500).send(error)
+  })
+
+ 
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     var title = req.params.title
-    var bookArray = Object.keys(books);
+    getBooks()
+    .then((books)=>{
+      var bookArray = Object.keys(books);
   
-    for(var i in bookArray){
+      for(var i in bookArray){
      
-      if(books[bookArray[i]].title === title){
-          
-          res.send(books[bookArray[i]]);
+        if(books[bookArray[i]].title === title){
+            
+            res.send(books[bookArray[i]]);
+        }
       }
-    }
-    res.send("Author cannot be found")
+    })
+    .catch((error)=>{
+      res.status(500).send(error)
+    })
+  
 });
 
 //  Get book review
